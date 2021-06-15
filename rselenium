@@ -1,0 +1,62 @@
+##################################
+# PACOTES                        #
+##################################
+
+pacotes_necessarios <- c('RODBC','data.table','RSelenium','methods')
+
+# Carregar
+
+for(i in 1:length(pacotes_necessarios)){
+  if(pacotes_necessarios[i] %in% installed.packages()){
+    eval(parse(text=paste0("library(",pacotes_necessarios[i],")")))
+    #cat('Pacote carregado: ',pacotes_necessarios[i],'\n')
+  } else {
+    eval(parse(text=paste0("install.packages('",pacotes_necessarios[i],"')")))
+    #cat('Pacote instalado: ',pacotes_necessarios[i],'\n')
+    eval(parse(text=paste0("library(",pacotes_necessarios[i],")")))
+    #cat('Pacote carregado: ',pacotes_necessarios[i],'\n')
+  }
+}
+
+eval(parse(text = paste0("remDr <- rsDriver(port=",substr(format(Sys.time(),"%s"),6,9),"L)")))
+remDr <- remDr$client
+remDr$getStatus()
+
+# pagina de login
+remDr$navigate("http://admin.jumplabel.com.br/#Index")
+Sys.sleep(1)
+remDr$findElement("id", "Employee_Email")$sendKeysToElement(list("login@login.com"))
+remDr$findElement("id", "Employee_Password")$sendKeysToElement(list("coloque_senha"))
+remDr$findElement("xpath","/html/body/div[2]/div/div/div/div/div/form/div[4]/div[1]/button")$clickElement()
+Sys.sleep(2)
+
+# pagina inicial
+remDr$findElement("xpath","/html/body/div[7]/div/div/div/div/div/div[1]/div/button")$clickElement()
+Sys.sleep(2)
+
+# pagina de preenchimento de horas
+remDr$findElement('xpath','//*[@id="Hour_Id_Project"]')$sendKeysToElement(list("k"))
+Sys.sleep(2)
+remDr$findElement('xpath','//*[@id="Hour_Description"]')$sendKeysToElement(list("d"))
+Sys.sleep(2)
+remDr$findElement('xpath','//*[@id="Hour_LocalityId"]')$sendKeysToElement(list("r"))
+Sys.sleep(2)
+remDr$findElement('xpath','//*[@id="Hour_Date"]')$sendKeysToElement(list(format(Sys.time(),'%d/%m/%Y')))
+Sys.sleep(2)
+
+remDr$findElement('xpath','//*[@id="Hour_Arrival_Time"]')$sendKeysToElement(list('09:00'))
+Sys.sleep(2)
+remDr$findElement('xpath','//*[@id="Hour_Beginning_Of_The_Break"]')$sendKeysToElement(list('13:00'))
+Sys.sleep(2)
+remDr$findElement('xpath','//*[@id="Hour_End_Of_The_Break"]')$sendKeysToElement(list('14:00'))
+Sys.sleep(2)
+remDr$findElement('xpath','//*[@id="Hour_Exit_Time"]')$sendKeysToElement(list('18:00'))
+Sys.sleep(2)
+texto <- "Kroton"
+remDr$findElement('xpath','//*[@id="Hour_Activies"]')$sendKeysToElement(list(texto))
+Sys.sleep(2)
+remDr$findElement('xpath','//*[@id="HoursForm"]/div[11]/button[2]')$clickElement()
+Sys.sleep(5)
+
+
+remDr$close()
